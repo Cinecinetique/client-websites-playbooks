@@ -1,0 +1,22 @@
+---
+# This playbook configure hosts: initial configuration, installing docker on  non DO hosts
+
+- name: apply initial common configuration to all hosts
+  hosts: all
+  gather_facts: false
+  vars:
+    custom_ssh_port: 8022
+  vars_files:
+   - ../private_vars/ssh_connect.yml
+
+  roles:
+    - sshd
+    - { role: swap,  ansible_ssh_port : "{{custom_ssh_port}}", gather_facts: true, tags: ["swap"] }
+    - { role: ufw,  ansible_ssh_port : "{{custom_ssh_port}}", gather_facts: true, tags: ["ufw"] }
+
+
+- name: setting up docker daemon
+  hosts: gce, aws
+
+  roles:
+    - dockerd

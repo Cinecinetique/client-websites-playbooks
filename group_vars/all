@@ -1,0 +1,4 @@
+---
+vars_files:
+ - private_vars/hosts
+ - private_vars/ssh_connect.yml
