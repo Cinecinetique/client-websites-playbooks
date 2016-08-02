@@ -27,17 +27,17 @@
     - ssh_port_detect.config.port.set_custom
 
 - name: first remove the host from our known hosts list as we might have re-spun the hosts
-  local_action: known_hosts name={{ansible_host}} state=absent
+  local_action: lineinfile dest="{{local_known_hosts_file}}" state=absent regexp="{{ansible_host}}"
   tags:
     - ssh_port_detect.known_hosts.key.remove
 
 - name: retrieve public host key for the host
-  local_action: command ssh-keyscan -p {{ansible_port}} -t ecdsa -H {{ansible_host}}
+  local_action: command ssh-keyscan -p {{ansible_port}} -t ecdsa {{ansible_host}}
   register: new_host_key
   tags:
     - ssh_port_detect.known_hosts.key.retrieve
 
 - name: add the new host key for the host to our known hosts list
-  local_action: known_hosts name={{ansible_host}} key={{new_host_key.stdout}} state=present
+  local_action: lineinfile dest="{{local_known_hosts_file}}" state=present regexp="{{ansible_host}}" line="{{new_host_key.stdout}}"
   tags:
     - ssh_port_detect.known_hosts.key.add
