@@ -19,7 +19,11 @@
 
 
 - name: set up docker daemon
-  hosts: gce, aws, do
+  vars_files:
+  - ../private_vars/ssh_connect.yml
+  vars:
+    - ansible_port: "{{custom_port}}"
+  hosts: all
 
   roles:
     - { role: dockerd, tags: ["docker"] }
