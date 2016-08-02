@@ -28,8 +28,12 @@
   roles:
     - { role: dockerd, tags: ["docker"] }
 
-- name: remove root access
-  hosts: all
-
-  roles:
-    - { role: deroot, tags: ["deroot"] }
+# - name: remove root access
+#   vars_files:
+#   - ../private_vars/ssh_connect.yml
+#   vars:
+#     - ansible_port: "{{custom_port}}"
+#   hosts: all
+#
+#   roles:
+#     - { role: deroot, tags: ["deroot"] }
