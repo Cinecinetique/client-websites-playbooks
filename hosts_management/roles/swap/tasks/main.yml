@@ -1,6 +1,14 @@
 ---
+- name: Check if swap file exists
+  stat:
+    path: /swapfile
+  register: swap_file_check
+  tags:
+    - swap.file.check
+
 - name: Creating swap file
   command: fallocate -l 1G /swapfile creates=/swapfile
+  when: not swap_file_check.stat.exists
   tags:
     - swap.file.create
 
@@ -21,7 +29,7 @@
 
 - name: Make swap file
   command: mkswap /swapfile
-  when: swapfile.stdout.find('swap file') == -1
+  when: not swap_file_check.stat.exists and swapfile.stdout.find('swap file') == -1
   tags:
     - swap.file.mkswap
 
@@ -40,6 +48,6 @@
 
 - name: Mount swap
   command: swapon /swapfile
-  when: ansible_swaptotal_mb is not defined or ansible_swaptotal_mb < 1 
+  when: not swap_file_check.stat.exists
   tags:
     - swap.file.swapon
