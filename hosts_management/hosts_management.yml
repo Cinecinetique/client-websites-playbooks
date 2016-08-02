@@ -1,6 +1,7 @@
 ---
 # This playbook configure hosts: initial configuration, installing docker on  non DO hosts
 
+
 - name: apply initial common configuration to all hosts
   hosts: all
   gather_facts: false
@@ -10,6 +11,8 @@
    - ../private_vars/ssh_connect.yml
 
   roles:
+    - { role: ssh_port_detect, tags: ["hostconfig", "ssh_port_detect"] }
+    - { role: python, tags: ["hostconfig","python"] }
     - { role: sshd, tags: ["hostconfig", "sshd"] }
     - { role: swap, tags: ["hostconfig", "swap"] }
     - { role: ufw,  tags: ["hostconfig", "ufw"] }

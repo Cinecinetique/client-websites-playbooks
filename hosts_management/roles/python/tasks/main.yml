@@ -1,0 +1,22 @@
+---
+- name: Detecting if we have Ubuntu xenial
+  raw: lsb_release -is
+  register: distribution
+  ignore_errors: true
+
+- name: Detecting if we have Ubuntu xenial
+  raw: lsb_release -rs
+  register: release
+  ignore_errors: true
+
+- name: Install python 2.7 on ubuntu 16.04 (xenial)
+  raw: apt-get update -qq && apt-get install -qq python2.7
+  when: "{{ release.stdout | version_compare('16.04','>=') }}"
+
+- name: check if softlink exists
+  raw: file -b /usr/bin/python
+  register: python_file
+
+- name: create softlink for python 2.7
+  raw: ln -fs /usr/bin/python2.7 /usr/bin/python
+  when: "{{ release.stdout | version_compare('16.04','>=') }}"
