@@ -7,7 +7,7 @@
   with_items:
     - 80     # Default HTTP port
     - 443    # Default HTTPS port
-    - 8022   # Custom SSHd port
+    - "{{custom_port}}"   # Custom SSHd port
     - 2376   # Docker daemon API port (TLS)
   tags:
     - ufw.ports.open

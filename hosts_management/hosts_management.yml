@@ -6,7 +6,7 @@
   hosts: all
   gather_facts: false
   vars:
-    custom_ssh_port: 8022
+    custom_ssh_port: "{{custom_port}}"
   vars_files:
    - ../private_vars/ssh_connect.yml
 
