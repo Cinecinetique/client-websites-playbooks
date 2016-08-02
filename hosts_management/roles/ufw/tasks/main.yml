@@ -14,6 +14,6 @@
 - name: Turn on UFW
   ufw: >
     state=enabled
-  notify: restart the host
+  #notify: restart the host
   tags:
     - ufw.enable
