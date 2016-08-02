@@ -10,13 +10,19 @@
    - ../private_vars/ssh_connect.yml
 
   roles:
-    - sshd
-    - { role: swap,  ansible_ssh_port : "{{custom_ssh_port}}", gather_facts: true, tags: ["swap"] }
-    - { role: ufw,  ansible_ssh_port : "{{custom_ssh_port}}", gather_facts: true, tags: ["ufw"] }
+    - { role: sshd, tags: ["hostconfig", "sshd"] }
+    - { role: swap, tags: ["hostconfig", "swap"] }
+    - { role: ufw,  tags: ["hostconfig", "ufw"] }
 
 
-- name: setting up docker daemon
-  hosts: gce, aws
+- name: set up docker daemon
+  hosts: gce, aws, do
 
   roles:
-    - dockerd
+    - { role: dockerd, tags: ["docker"] }
+
+- name: remove root access
+  hosts: all
+
+  roles:
+    - { role: deroot, tags: ["deroot"] }

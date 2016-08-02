@@ -1,0 +1,13 @@
+---
+- name: Add GPG key for the official Apt repository for Docker
+  command: apt-get update && apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+- name: Add the Docker repository to APT sources
+  command: echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+- name: Update the package database with the Docker packages from the newly added repo
+  command: apt-get update
+- name: Make sure you are about to install from the Docker repo instead of the default Ubuntu 16.04 repo
+  command: apt-cache policy docker-engine
+  register: apt_cache_policy
+- name: Install Docker Engine
+  command: apt-get install -y docker-engine
+#- name: Allow passwordless sudo access to docker to enable subsequent control by docker-machine
