@@ -1,0 +1,35 @@
+---
+- name: create a cinecinetique user
+  user: name=cinecinetique shell=/bin/bash groups=admin,docker,sudo append=yes
+
+- name: add new public key to authorized key for cinecinetique
+  authorized_key: user=cinecinetique key="{{ lookup('file', '../private_vars/public_keys/cinecinetique.pub') }}"
+
+- name: create a dockermachine user
+  user: name=dockermachine shell=/bin/bash groups=docker,sudo append=yes
+
+- name: add new public key to authorized key for dockermachine
+  authorized_key: user=dockermachine key="{{ lookup('file', '../private_vars/public_keys/dockermachine.pub') }}"
+
+- name: disable root login
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin yes"  line="PermitRootLogin no" state=present
+
+- name: disable password authentication
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" insertafter="^#PasswordAuthentication" line="PasswordAuthentication no"
+
+- name: passwordless sudo
+  lineinfile: dest=/etc/sudoers regexp='^%sudo' line="%sudo ALL=(ALL) NOPASSWD:ALL"
+
+- name: write a flag on the local filesystem to indicate our playbooks that the user is not root
+  local_action: file path="/tmp/{{inventory_hostname}}.custom_user" state=touch mode="u=rw,g=r,o=r"
+
+- name: restart machine
+  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+  async: 1
+  poll: 0
+  become: true
+  ignore_errors: true
+
+- name: Wait for server to restart
+  local_action: wait_for host={{ansible_host}} port={{ansible_port}} timeout=60
+  ignore_errors: true
