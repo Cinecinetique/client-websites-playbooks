@@ -11,8 +11,17 @@
 - name: Create a file for Docker repository in APT sources directory
   file: path=/etc/apt/sources.list.d/docker.list state=touch mode="u=rw,g=r,o=r"
 
-- name: Add remote package repository in APT sources for Docker
+- name: checking the current release of ubuntu so we can use the approproriate repo for docker
+  command: lsb_release -cs
+  register: codename
+
+- name: Add remote package repository in APT sources for Docker (xenial)
   lineinfile: dest=/etc/apt/sources.list.d/docker.list line="deb https://apt.dockerproject.org/repo ubuntu-xenial main"
+  when: codename.stdout == 'xenial'
+
+- name: Add remote package repository in APT sources for Docker (trusty)
+  lineinfile: dest=/etc/apt/sources.list.d/docker.list line="deb https://apt.dockerproject.org/repo ubuntu-trusty main"
+  when: codename.stdout == 'trusty'
 
 - name: Update the package database with the Docker packages from the newly added repo
   apt: update_cache=yes

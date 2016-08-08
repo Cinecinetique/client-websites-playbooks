@@ -1,0 +1,16 @@
+---
+# This playbook configure hosts: initial configuration, installing docker on  non DO hosts
+
+
+- name: Create a generic driver for docker-machine
+  hosts: all
+  gather_facts: false
+  vars:
+    - custom_ssh_port: "{{custom_port}}"
+  vars_files:
+    - ../private_vars/ssh_connect.yml
+
+  roles:
+    - { role: '../hosts_management/roles/ssh_user_detect', tags: ["driver", "ssh_user_detect"] }
+    - { role: '../hosts_management/roles/ssh_port_detect', tags: ["driver", "ssh_port_detect"] }
+    - { role: machine_driver, tags: ["driver","machine_driver"] }
