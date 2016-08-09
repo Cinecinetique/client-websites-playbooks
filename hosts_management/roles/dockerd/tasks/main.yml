@@ -33,4 +33,12 @@
 - name: Install Docker Engine
   apt: name=docker-engine
   when: apt_cache_policy.stdout.find('apt.dockerproject.org')
-#- name: Allow passwordless sudo access to docker to enable subsequent control by docker-machine
+
+- name: Install python-pip needed to install docker-py
+  apt: name=python-pip
+
+- name: Install docker-py for managing containers with docker_service module
+  command: pip install docker-py
+
+- name: Install docker-compose for managing containers with docker_service module
+  command: pip install docker-compose

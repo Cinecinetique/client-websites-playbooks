@@ -1,0 +1,17 @@
+---
+# This playbook configure appliction: instantiate web app and database with docker compose, git clone the files, git clone and update database
+
+
+- name: Instantiate Wordpress and its database
+  hosts: all
+  gather_facts: false
+  vars:
+    - custom_ssh_port: "{{custom_port}}"
+  vars_files:
+    - ../private_vars/ssh_connect.yml
+    - ../private_vars/app_vars.yml
+
+  roles:
+    - { role: '../hosts_management/roles/ssh_user_detect', tags: ["app", "ssh_user_detect"] }
+    - { role: '../hosts_management/roles/ssh_port_detect', tags: ["app", "ssh_port_detect"] }
+    - { role: compose, tags: ["app","docker_compose"] }

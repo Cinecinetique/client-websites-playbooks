@@ -1,12 +1,12 @@
 ---
 - name: check for custom user setup
-  local_action: stat path="/tmp/{{inventory_hostname}}.custom_user"
+  local_action: stat path="/var/tmp/ansible.custom_user.{{inventory_hostname}}"
   register: custom_user_flag
 
 - name: set ssh user to custom user, set the corresponding ssh private key and enable privilege escalation
   set_fact: ansible_user={{custom_user}} ansible_ssh_private_key_file="{{custom_ssh_private_key_file}}" ansible_become=true
   when: custom_user_flag.stat.exists
 
-- name: set ssh user to root if flag file doesn't exist 
+- name: set ssh user to root if flag file doesn't exist
   set_fact: ansible_user=root
   when: not custom_user_flag.stat.exists

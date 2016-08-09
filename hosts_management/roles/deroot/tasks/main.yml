@@ -21,7 +21,7 @@
   lineinfile: dest=/etc/sudoers regexp='^%sudo' line="%sudo ALL=(ALL) NOPASSWD:ALL"
 
 - name: write a flag on the local filesystem to indicate our playbooks that the user is not root
-  local_action: file path="/tmp/{{inventory_hostname}}.custom_user" state=touch mode="u=rw,g=r,o=r"
+  local_action: file path="/var/tmp/ansible.custom_user.{{inventory_hostname}}" state=touch mode="u=rw,g=r,o=r"
 
 - name: restart machine
   shell: sleep 2 && shutdown -r now "Ansible updates triggered"

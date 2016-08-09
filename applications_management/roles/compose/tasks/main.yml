@@ -1,0 +1,14 @@
+---
+- name: create a webapp directory on the host machine
+  file: name=/etc/docker/webapp state=directory
+
+- name: deploy the docker-compose file onto the host machine
+  copy: src={{webapp_compose_path}}/docker-compose.yml dest=/etc/docker/webapp/docker-compose.yml
+
+- name: deploy the envrionment file onto the host machine
+  copy: src={{webapp_compose_path}}/.env dest=/etc/docker/webapp/.env
+
+- name: instantiate a new instance of the web application and its database
+  docker_service: project_src=/etc/docker/webapp/ state=present
+  environment:
+    SERVER_NAME: "{{inventory_hostname}}"
