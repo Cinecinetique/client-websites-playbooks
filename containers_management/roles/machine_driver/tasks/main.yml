@@ -1,4 +1,8 @@
 ---
+- name: Check version of docker on docker-machine
+  local_action: command docker-machine version {{inventory_hostname}}
+  register: machine_version
+
 - name: Create a generic driver for docker-machine
   local_action: command docker-machine create \
     --driver=generic \
@@ -7,3 +11,8 @@
     --generic-ssh-key={{dockermachine_ssh_private_key_file}} \
     --generic-ssh-port={{ansible_port}} \
     {{inventory_hostname}}
+  when: machine_version.stderr is defined and machine_version.stderr.find('Host does not exist') != -1
+
+- name: Provision a generic driver for docker-machine if it already exists
+  local_action: command docker-machine provision {{inventory_hostname}}
+  when: machine_version.stderr is defined and machine_version.stderr.find('Host does not exist') == -1
