@@ -7,6 +7,10 @@
   set_fact: ansible_user={{custom_user}} ansible_ssh_private_key_file="{{custom_ssh_private_key_file}}" ansible_become=true
   when: custom_user_flag.stat.exists
 
-- name: set ssh user to root if flag file doesn't exist
+- name: set ssh user to root if flag file doesn't exist (DO)
   set_fact: ansible_user=root
-  when: not custom_user_flag.stat.exists
+  when: not custom_user_flag.stat.exists and 'do' in group_names
+
+- name: set ssh user to ec2-user if flag file doesn't exist (AWS)
+  set_fact: ansible_user=ubuntu ansible_become=true
+  when: not custom_user_flag.stat.exists and 'aws' in group_names

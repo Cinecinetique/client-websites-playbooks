@@ -1,0 +1,61 @@
+---
+  #   6  sudo rm -rf /var/lib/apt/lists/*
+  #   8  sudo apt-get clean
+  #   9  sudo apt-get update
+  #  10  sudo apt-get install -y python-pip
+
+- name: fix the problematic AWS mirror for Ubuntu repos (rm)
+  command: "rm -rf /var/lib/apt/lists/*"
+
+- name: fix the problematic AWS mirror for Ubuntu repos (apt-get clean)
+  command: apt-get clean
+
+- name: fix the problematic AWS mirror for Ubuntu repos (apt-get update)
+  command: apt-get update
+
+
+- name: install pip
+  command: apt-get install -y python-pip
+
+
+- name: install boto
+  command: pip install boto
+
+
+- name: setup EC2 security group for the host
+  ec2_group:
+    name: containerized-webapp-sg
+    description: security group for containerized webapp
+    vpc_id: vpc-886d83ec
+    region: ap-southeast-1
+    aws_secret_key: "{{aws_secret_api_key}}"
+    aws_access_key: "{{aws_access_api_key}}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: "{{custom_port}}"
+        to_port: "{{custom_port}}"
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 2376
+        to_port: 2376
+        cidr_ip: 0.0.0.0/0
+      - proto: all
+        # the containing group name may be specified here
+        group_name: containerized-webapp-sg
+    rules_egress:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
