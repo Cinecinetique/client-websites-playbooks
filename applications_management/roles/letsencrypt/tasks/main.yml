@@ -4,10 +4,10 @@
   lineinfile: dest=/etc/letsencrypt/cli.ini  regexp="^email" line="email = {{letsencrypt_email}}" state=present
 
 - name: create/renew TLS certificates
-  command: docker exec -d wordpress_web_1 bash -c "letsencrypt certonly"
+  command: docker exec -d {{webapp_name}}_web_1 bash -c "letsencrypt certonly"
 
 - name: copy the nginx TLS config
-  command: docker exec -d wordpress_web_1 bash -c "cp /etc/nginx/ssl.conf /etc/nginx/ssl.{{inventory_hostname}}.conf"
+  command: docker exec -d {{webapp_name}}_web_1 bash -c "cp /etc/nginx/ssl.conf /etc/nginx/ssl.{{inventory_hostname}}.conf"
 
 - name: reload supervisor processes
-  command: docker exec -d wordpress_web_1 bash -c "supervisorctl reload"
+  command: docker exec -d {{webapp_name}}_web_1 bash -c "supervisorctl reload"

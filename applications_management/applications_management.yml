@@ -16,3 +16,4 @@
     - { role: '../hosts_management/roles/ssh_port_detect', tags: ["app", "ssh_port_detect"] }
     - { role: compose, tags: ["app","docker_compose"] }
     - { role: letsencrypt, tags: ["app","letsencrypt"] }
+    - { role: git, tags: ["app","git"] }

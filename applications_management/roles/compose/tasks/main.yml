@@ -5,12 +5,17 @@
 - name: deploy the docker-compose file onto the host machine
   copy: src={{webapp_compose_path}}/docker-compose.yml dest=/etc/docker/webapp/docker-compose.yml
 
+- name: update the image for the web app if it has changed
+  command: docker-compose -f /etc/docker/webapp/docker-compose.yml pull web
+
 - name: instantiate a new instance of the web application and its database
   docker_service: project_src=/etc/docker/webapp/ state=present
   environment:
+    COMPOSE_PROJECT_NAME: "{{webapp_name}}"
     SERVER_NAME: "{{inventory_hostname}}"
-    LE_EMAIL: {{letsencrypt_email}}
-    WP_DB_USER: {{db_user}}
-    WP_DB_PASSWORD: {{db_password}}
-    WP_DB_NAME: {{db_database}}
-    MYSQL_ROOT_PASSWORD: {{mysql_root_password}}
+    LE_EMAIL: "{{letsencrypt_email}}"
+    WP_DB_USER: "{{db_user}}"
+    WP_DB_PASSWORD: "{{db_password}}"
+    WP_DB_NAME: "{{db_database}}"
+    MYSQL_ROOT_PASSWORD: "{{mysql_root_password}}"
+    GIT_REPO_SSH_URL: {{webapp_git_repo}}
