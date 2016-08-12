@@ -10,10 +10,20 @@
   vars_files:
     - ../private_vars/ssh_connect.yml
     - ../private_vars/app_vars.yml
+    - ../private_vars/gitlab.yml
+  environment:
+    COMPOSE_PROJECT_NAME: "{{webapp_name}}"
+    SERVER_NAME: "{{inventory_hostname}}"
+    LE_EMAIL: "{{letsencrypt_email}}"
+    WP_DB_USER: "{{db_user}}"
+    WP_DB_PASSWORD: "{{db_password}}"
+    WP_DB_NAME: "{{db_database}}"
+    MYSQL_ROOT_PASSWORD: "{{mysql_root_password}}"
+    GIT_REPO_SSH_URL: "{{webapp_git_repo}}"
 
   roles:
     - { role: '../hosts_management/roles/ssh_user_detect', tags: ["app", "ssh_user_detect"] }
     - { role: '../hosts_management/roles/ssh_port_detect', tags: ["app", "ssh_port_detect"] }
     - { role: compose, tags: ["app","docker_compose"] }
     - { role: letsencrypt, tags: ["app","letsencrypt"] }
-    - { role: git, tags: ["app","git"] }
+    - { role: git_auth, tags: ["app","git_auth"] }

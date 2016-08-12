@@ -1,0 +1,27 @@
+---
+- name: verify whether the key already exist
+  command: docker exec -t {{webapp_name}}_web_1 test -f /root/.ssh/id_rsa
+  register: ssh_key_file
+  ignore_errors: true
+
+- name: generate ssh key on the container
+  command: docker exec -t {{webapp_name}}_web_1 bash -c 'ssh-keygen -N "" -q -t rsa -f /root/.ssh/id_rsa'
+  when: ssh_key_file | failed
+
+- name: extract the public key
+  command: docker exec -t {{webapp_name}}_web_1 cat /root/.ssh/id_rsa.pub
+  register: ssh_public_key
+
+
+- name: upload public key to gitlab
+  uri:
+    url: "https://gitlab.com/api/v3/projects/{{gitlab_project_id}}/deploy_keys/"
+    method: POST
+    HEADER_PRIVATE-TOKEN: "{{ansible_access_token}}"
+    HEADER_Content-Type: "application/json"
+    body_format: json
+    body: "{'title': '{{inventory_hostname}} {{webapp_name}}_web_1', 'key': '{{ssh_public_key.stdout}}'}"
+  register: gitlab_response
+  ignore_errors: true
+
+- debug: msg="{{gitlab_response.status}}"
