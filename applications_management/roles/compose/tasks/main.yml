@@ -3,7 +3,7 @@
   file: name=/etc/docker/webapp state=directory
 
 - name: deploy the docker-compose file onto the host machine
-  copy: src={{webapp_compose_path}}/docker-compose.yml dest=/etc/docker/webapp/docker-compose.yml
+  copy: src={{webapp_compose_path}}/git-compose.yml dest=/etc/docker/webapp/docker-compose.yml
 
 - name: update the image for the web app if it has changed
   command: docker-compose -f /etc/docker/webapp/docker-compose.yml pull web

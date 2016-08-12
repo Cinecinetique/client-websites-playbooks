@@ -1,0 +1,6 @@
+---
+- name: clone webapp projects
+  command: docker exec -t {{webapp_name}}_web_1 bash -c 'cd /usr/share/nginx/ && git pull'
+
+- name: reload supervisor processes
+  command: docker exec -d {{webapp_name}}_web_1 bash -c "supervisorctl reload"

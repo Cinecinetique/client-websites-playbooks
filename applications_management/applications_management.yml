@@ -20,6 +20,7 @@
     WP_DB_NAME: "{{db_database}}"
     MYSQL_ROOT_PASSWORD: "{{mysql_root_password}}"
     GIT_REPO_SSH_URL: "{{webapp_git_repo}}"
+    IMAGE_NAME: "{{webapp_container_repo}}"
 
   roles:
     - { role: '../hosts_management/roles/ssh_user_detect', tags: ["app", "ssh_user_detect"] }
@@ -27,3 +28,4 @@
     - { role: compose, tags: ["app","docker_compose"] }
     - { role: letsencrypt, tags: ["app","letsencrypt"] }
     - { role: git_auth, tags: ["app","git_auth"] }
+    - { role: git_clone, tags: ["app","git_clone"] }
