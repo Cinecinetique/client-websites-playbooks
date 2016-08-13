@@ -5,6 +5,13 @@
 - name: deploy the docker-compose file onto the host machine
   copy: src={{webapp_compose_path}}/git-compose.yml dest=/etc/docker/webapp/docker-compose.yml
 
+- name: login to the gitlab registry
+  docker_login:
+    registry: registry.gitlab.com
+    username: rijam
+    password: "{{gitlab_password}}"
+    reauthorize: yes
+
 - name: update the image for the web app if it has changed
   command: docker-compose -f /etc/docker/webapp/docker-compose.yml pull web
 
