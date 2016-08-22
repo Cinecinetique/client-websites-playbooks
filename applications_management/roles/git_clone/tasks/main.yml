@@ -1,6 +1,22 @@
 ---
+
+- name: make sure we have a host key for our repository
+  command:  docker exec -t {{webapp_name}}_web_1 bash -c 'ssh-keyscan -t ecdsa gitlab.com'
+  register: repo_host_key
+
+- name: check if the host key is already in known_hosts
+  command: docker exec -t {{webapp_name}}_web_1 bash -c 'grep "gitlab.com" /root/.ssh/known_hosts 2> /dev/null'
+  register: repo_host_key_test
+  ignore_errors: true
+
+- name: add new host key in known_hosts if necessary
+  command: docker exec -t {{webapp_name}}_web_1 bash -c 'echo "{{repo_host_key.stdout}}" >> /root/.ssh/known_hosts'
+
 - name: clone webapp projects
-  command: docker exec -t {{webapp_name}}_web_1 bash -c 'cd /usr/share/nginx/ && git pull'
+  command: docker exec -t {{webapp_name}}_web_1 bash -c 'cd /usr/share/nginx/www && git pull {{webapp_git_repo}} master'
+
+- name: ensure files are owned by the application server
+  command: docker exec -t {{webapp_name}}_web_1 bash -c 'chown -R www-data:www-data usr/share/nginx/www'
 
 - name: reload supervisor processes
   command: docker exec -d {{webapp_name}}_web_1 bash -c "supervisorctl reload"

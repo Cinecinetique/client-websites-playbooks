@@ -2,6 +2,7 @@
 - name: Check version of docker on docker-machine
   local_action: command docker-machine version {{inventory_hostname}}
   register: machine_version
+  ignore_errors: true
 
 - name: Create a generic driver for docker-machine
   local_action: command docker-machine create \
